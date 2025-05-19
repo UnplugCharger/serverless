@@ -19,20 +19,20 @@ type Template struct {
 	Dockerfile string `yaml:"dockerfile"`
 }
 
-// DockerManager handles Docker operations
-type DockerManager struct {
+// Manager DockerManager handles Docker operations
+type Manager struct {
 	config *config.DockerConfig
 }
 
 // NewDockerManager creates a new DockerManager with the given configuration
-func NewDockerManager(config *config.DockerConfig) *DockerManager {
-	return &DockerManager{
+func NewDockerManager(config *config.DockerConfig) *Manager {
+	return &Manager{
 		config: config,
 	}
 }
 
 // BuildDockerImage builds a Docker image using the specified template
-func (dm *DockerManager) BuildDockerImage(ctx context.Context, dir, language, handlerFile string) (string, error) {
+func (dm *Manager) BuildDockerImage(ctx context.Context, dir, language, handlerFile string) (string, error) {
 	requestID, _ := ctx.Value("requestID").(string)
 
 	// Load the Dockerfile template for the specified language
@@ -115,7 +115,7 @@ func (dm *DockerManager) BuildDockerImage(ctx context.Context, dir, language, ha
 }
 
 // RunDockerContainer executes a function using a Docker container
-func (dm *DockerManager) RunDockerContainer(ctx context.Context, imageID string, input map[string]string) (string, error) {
+func (dm *Manager) RunDockerContainer(ctx context.Context, imageID string, input map[string]string) (string, error) {
 	requestID, _ := ctx.Value("requestID").(string)
 
 	log.Info().
@@ -212,7 +212,7 @@ func sanitizeEnvVar(name string) string {
 }
 
 // LoadTemplate loads a Dockerfile template for the specified language
-func (dm *DockerManager) LoadTemplate(ctx context.Context, language string) (*Template, error) {
+func (dm *Manager) LoadTemplate(ctx context.Context, language string) (*Template, error) {
 	requestID, _ := ctx.Value("requestID").(string)
 
 	// Determine the path to the template file
@@ -250,7 +250,7 @@ func (dm *DockerManager) LoadTemplate(ctx context.Context, language string) (*Te
 }
 
 // ExtractImageID extracts the Docker image ID from build output
-func (dm *DockerManager) ExtractImageID(output string) (string, error) {
+func (dm *Manager) ExtractImageID(output string) (string, error) {
 	lines := strings.Split(output, "\n")
 	for _, line := range lines {
 		if strings.Contains(line, "writing image sha256:") {
@@ -266,7 +266,7 @@ func (dm *DockerManager) ExtractImageID(output string) (string, error) {
 }
 
 // CleanupImages removes unused Docker images to free up space
-func (dm *DockerManager) CleanupImages(ctx context.Context) error {
+func (dm *Manager) CleanupImages(ctx context.Context) error {
 	requestID, _ := ctx.Value("requestID").(string)
 
 	log.Info().

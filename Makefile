@@ -8,8 +8,8 @@ SERVER_PORT=8080
 SERVER_URL=http://localhost:$(SERVER_PORT)
 
 # Default values for commands
-ZIP_FILE?=test.zip
-FUNCTION_ID?=49daf97b-4c4a-4c13-9a42-a242d8aa3c80
+ZIP_FILE?=image_processor.zip
+FUNCTION_ID?=df937958-82f3-48e4-a855-ffaf16d95247
 
 build:
 	@echo "Building $(BINARY_NAME)..."

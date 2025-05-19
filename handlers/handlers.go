@@ -19,7 +19,7 @@ import (
 // ServerHandler handles HTTP requests for the serverless platform
 type ServerHandler struct {
 	fileHandler   *utils.FileHandler
-	dockerManager *docker.DockerManager
+	dockerManager *docker.Manager
 	functionStore *store.FunctionStore
 	config        *config.Config
 }
