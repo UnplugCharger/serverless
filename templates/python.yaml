@@ -1,0 +1,15 @@
+dockerfile: |
+  FROM python:3.9-slim
+  WORKDIR /app
+  COPY . .
+
+  # Install dependencies if a requirements.txt file exists
+  RUN if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+  # Create a wrapper script to handle environment variables
+  RUN echo '#!/bin/sh\n\
+  python %s "$@"' > /app/wrapper.sh && \
+  chmod +x /app/wrapper.sh
+
+  # Run the Python script with the wrapper
+  CMD ["/app/wrapper.sh"]

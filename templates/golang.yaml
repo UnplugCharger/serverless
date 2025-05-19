@@ -1,0 +1,44 @@
+dockerfile: |
+  # Use the official Golang image as the base image
+  FROM golang:1.19 AS builder
+
+  # Set the working directory inside the container
+  WORKDIR /app
+
+  # Check if go.mod exists and set GO111MODULE accordingly
+    RUN if [ -f go.mod ]; then \
+          echo "Go modules found, enabling modules"; \
+          export GO111MODULE=on; \
+          go mod download; \
+        else \
+          echo "Go modules not found, disabling modules"; \
+          export GO111MODULE=off; \
+        fi
+
+    # Set GO111MODULE globally for subsequent commands
+    ENV GO111MODULE=${GO111MODULE:-off}
+  # Copy the rest of the application code
+  COPY . .
+
+  # Build the application
+  RUN go build -o handler .
+
+  # Use a minimal base image for the final stage
+  FROM debian:buster-slim
+
+  # Set the working directory
+  WORKDIR /app
+
+  # Copy the built binary from the builder stage
+  COPY --from=builder /app/handler .
+
+  # Make the binary executable
+  RUN chmod +x handler
+
+  # Create a wrapper script to handle environment variables
+  RUN echo '#!/bin/sh\n\
+  exec /app/handler "$@"' > /app/wrapper.sh && \
+  chmod +x /app/wrapper.sh
+
+  # Run the Go program with the wrapper
+  CMD ["/app/wrapper.sh"]
